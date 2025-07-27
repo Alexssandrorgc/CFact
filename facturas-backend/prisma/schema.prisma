@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int          @id @default(autoincrement())
+  email      String       @unique
+  password   String
+  name       String
+  invoices   Invoice[]
+  clients    Client[]
+  createdAt  DateTime     @default(now())
+}
+
+model Client {
+  id            Int       @id @default(autoincrement())
+  userId        Int
+  name          String
+  rfc           String
+  email         String
+  fiscalAddress String
+  createdAt     DateTime  @default(now())
+
+  user          User      @relation(fields: [userId], references: [id])
+  invoices      Invoice[]
+}
+
+model Invoice {
+  id                Int           @id @default(autoincrement())
+  userId            Int
+  clientId          Int
+  createdAt         DateTime      @default(now())
+  finalized         Boolean       @default(false)
+  generalDiscount   Float?        // porcentaje, ej: 0.1 para 10%
+  subtotal          Float         // sin impuestos ni descuentos
+  iva               Float         // monto exacto de IVA aplicado
+  isr               Float         // monto exacto de ISR aplicado
+  total             Float         // total con impuestos y descuentos
+  sent              Boolean       @default(false)
+
+  user              User          @relation(fields: [userId], references: [id])
+  client            Client        @relation(fields: [clientId], references: [id])
+  items             InvoiceItem[]
+}
+
+
+model InvoiceItem {
+  id              Int       @id @default(autoincrement())
+  invoiceId       Int
+  description     String
+  quantity        Float
+  unit            String    // ej: "horas", "piezas"
+  unitPrice       Float
+  itemDiscount    Float?    // porcentaje, ej: 0.15 para 15%
+  subtotal        Float     // (quantity * unitPrice) - descuento
+
+  invoice         Invoice   @relation(fields: [invoiceId], references: [id])
+}

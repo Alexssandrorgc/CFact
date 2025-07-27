@@ -1,0 +1,477 @@
+{
+  "info": {
+    "name": "API Facturación Freelancers",
+    "description": "Colección completa para probar la API de facturación",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "client_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "invoice_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/",
+          "host": ["{{base_url}}"],
+          "path": [""]
+        }
+      }
+    },
+    {
+      "name": "2. Registro Usuario",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    const response = pm.response.json();",
+              "    pm.environment.set(\"auth_token\", response.data.token);",
+              "    console.log(\"Token guardado:\", response.data.token);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Juan Pérez Freelancer\",\n  \"email\": \"juan.freelancer@test.com\",\n  \"password\": \"MiPassword123!\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/register",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "register"]
+        }
+      }
+    },
+    {
+      "name": "3. Login Usuario",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    pm.environment.set(\"auth_token\", response.data.token);",
+              "    console.log(\"Login exitoso, token guardado\");",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"juan.freelancer@test.com\",\n  \"password\": \"MiPassword123!\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "4. Crear Cliente 1",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    const response = pm.response.json();",
+              "    pm.environment.set(\"client_id\", response.data.id);",
+              "    console.log(\"Cliente creado con ID:\", response.data.id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Empresa ABC S.A. de C.V.\",\n  \"rfc\": \"ABC123456789\",\n  \"email\": \"contacto@empresaabc.com\",\n  \"fiscalAddress\": \"Av. Revolución 123, Col. Centro, Ciudad de México, C.P. 06000\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/clients",
+          "host": ["{{base_url}}"],
+          "path": ["clients"]
+        }
+      }
+    },
+    {
+      "name": "5. Crear Cliente 2",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Startup Innovadora Tech\",\n  \"rfc\": \"SIT987654321\",\n  \"email\": \"ceo@startuptech.com\",\n  \"fiscalAddress\": \"Calle Tecnología 456, Col. Innovación, Guadalajara, Jalisco, C.P. 44100\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/clients",
+          "host": ["{{base_url}}"],
+          "path": ["clients"]
+        }
+      }
+    },
+    {
+      "name": "6. Listar Clientes",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/clients",
+          "host": ["{{base_url}}"],
+          "path": ["clients"]
+        }
+      }
+    },
+    {
+      "name": "7. Buscar Cliente",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/clients/search?search=ABC",
+          "host": ["{{base_url}}"],
+          "path": ["clients", "search"],
+          "query": [
+            {
+              "key": "search",
+              "value": "ABC"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "8. Crear Factura 1 (Sin ISR)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    const response = pm.response.json();",
+              "    pm.environment.set(\"invoice_id\", response.data.id);",
+              "    console.log(\"Factura creada con ID:\", response.data.id);",
+              "    console.log(\"Total calculado:\", response.data.total);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"clientId\": {{client_id}},\n  \"generalDiscount\": 0.05,\n  \"applyIVA\": true,\n  \"applyISR\": false,\n  \"items\": [\n    {\n      \"description\": \"Desarrollo de sitio web corporativo responsivo\",\n      \"quantity\": 40,\n      \"unit\": \"horas\",\n      \"unitPrice\": 500.00,\n      \"itemDiscount\": 0.1\n    },\n    {\n      \"description\": \"Diseño de logotipo y branding\",\n      \"quantity\": 15,\n      \"unit\": \"horas\",\n      \"unitPrice\": 600.00,\n      \"itemDiscount\": 0\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/invoice",
+          "host": ["{{base_url}}"],
+          "path": ["invoice"]
+        }
+      }
+    },
+    {
+      "name": "9. Crear Factura 2 (Con ISR)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"clientId\": 2,\n  \"generalDiscount\": 0,\n  \"applyIVA\": true,\n  \"applyISR\": true,\n  \"items\": [\n    {\n      \"description\": \"Consultoría en transformación digital\",\n      \"quantity\": 25,\n      \"unit\": \"horas\",\n      \"unitPrice\": 800.00,\n      \"itemDiscount\": 0\n    },\n    {\n      \"description\": \"Implementación de sistema CRM\",\n      \"quantity\": 1,\n      \"unit\": \"proyecto\",\n      \"unitPrice\": 15000.00,\n      \"itemDiscount\": 0.05\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/invoice",
+          "host": ["{{base_url}}"],
+          "path": ["invoice"]
+        }
+      }
+    },
+    {
+      "name": "10. Obtener Factura Específica",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/invoice/{{invoice_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["invoice", "{{invoice_id}}"]
+        }
+      }
+    },
+    {
+      "name": "11. Listar Facturas",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/invoice",
+          "host": ["{{base_url}}"],
+          "path": ["invoice"]
+        }
+      }
+    },
+    {
+      "name": "12. Filtrar Facturas por Monto",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/invoice?minTotal=10000&maxTotal=50000",
+          "host": ["{{base_url}}"],
+          "path": ["invoice"],
+          "query": [
+            {
+              "key": "minTotal",
+              "value": "10000"
+            },
+            {
+              "key": "maxTotal",
+              "value": "50000"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "13. Actualizar Factura",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"clientId\": {{client_id}},\n  \"generalDiscount\": 0.10,\n  \"applyIVA\": true,\n  \"applyISR\": false,\n  \"items\": [\n    {\n      \"description\": \"Desarrollo de sitio web corporativo responsivo (ACTUALIZADO)\",\n      \"quantity\": 45,\n      \"unit\": \"horas\",\n      \"unitPrice\": 550.00,\n      \"itemDiscount\": 0.15\n    },\n    {\n      \"description\": \"Diseño de logotipo y branding completo\",\n      \"quantity\": 20,\n      \"unit\": \"horas\",\n      \"unitPrice\": 650.00,\n      \"itemDiscount\": 0\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/invoice/{{invoice_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["invoice", "{{invoice_id}}"]
+        }
+      }
+    },
+    {
+      "name": "14. Finalizar Factura",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/invoice/{{invoice_id}}/finalize",
+          "host": ["{{base_url}}"],
+          "path": ["invoice", "{{invoice_id}}", "finalize"]
+        }
+      }
+    },
+    {
+      "name": "15. Duplicar Factura",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/invoice/{{invoice_id}}/duplicate",
+          "host": ["{{base_url}}"],
+          "path": ["invoice", "{{invoice_id}}", "duplicate"]
+        }
+      }
+    },
+    {
+      "name": "16. Actualizar Cliente",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Empresa ABC S.A. de C.V. (ACTUALIZADA)\",\n  \"rfc\": \"ABC123456789\",\n  \"email\": \"nuevo.contacto@empresaabc.com\",\n  \"fiscalAddress\": \"Nueva Dirección 789, Col. Moderna, Ciudad de México, C.P. 06100\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/clients/{{client_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["clients", "{{client_id}}"]
+        }
+      }
+    },
+    {
+      "name": "17. Obtener Cliente Específico",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/clients/{{client_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["clients", "{{client_id}}"]
+        }
+      }
+    },
+    {
+      "name": "18. TEST: Sin Token (401)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/clients",
+          "host": ["{{base_url}}"],
+          "path": ["clients"]
+        }
+      }
+    },
+    {
+      "name": "19. TEST: Token Inválido (403)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer token-invalido-123"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/clients",
+          "host": ["{{base_url}}"],
+          "path": ["clients"]
+        }
+      }
+    }
+  ]
+}
